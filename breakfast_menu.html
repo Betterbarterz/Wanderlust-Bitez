@@ -1,0 +1,280 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Wanderlust Bites Food Trailer offers organic, hippie-inspired breakfast with a travel-life vibe. Enjoy avocado toast, breakfast tacos, smoothie bowls, and coffee at festivals!">
+  <meta name="keywords" content="organic breakfast food truck, hippie breakfast menu, travel-inspired eats, festival breakfast, organic smoothie bowls, Wanderlust Bites">
+  <meta name="author" content="Wanderlust Bites">
+  <title>Wanderlust Bites | Organic Hippie Breakfast Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+    body {
+      line-height: 1.6;
+      color: #333;
+      background: #f7f1e3;
+    }
+    nav {
+      background: #2c6e49;
+      padding: 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+    }
+    nav ul li {
+      margin: 0 1.5rem;
+    }
+    nav ul li a {
+      color: #f4e285;
+      text-decoration: none;
+      font-family: 'Amatic SC', cursive;
+      font-size: 1.5rem;
+    }
+    nav ul li a:hover {
+      color: #e07a5f;
+    }
+    .hero {
+      background: url('https://images.unsplash.com/photo-1490750967868-88aa448482fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    }
+    .hero h1 {
+      font-family: 'Amatic SC', cursive;
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.5rem;
+    }
+    section {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    h2 {
+      font-family: 'Amatic SC', cursive;
+      font-size: 3rem;
+      text-align: center;
+      color: #2c6e49;
+      margin-bottom: 2rem;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .menu-item {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+    .menu-item h3 {
+      font-family: 'Amatic SC', cursive;
+      font-size: 2rem;
+      color: #e07a5f;
+      margin-bottom: 0.5rem;
+    }
+    .menu-item .price {
+      font-weight: bold;
+      color: #2c6e49;
+      margin-bottom: 0.5rem;
+    }
+    .menu-item p {
+      font-size: 1rem;
+      color: #555;
+    }
+    .menu-item .options {
+      font-style: italic;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    footer {
+      background: #2c6e49;
+      color: white;
+      text-align: center;
+      padding: 2rem;
+    }
+    footer a {
+      color: #f4e285;
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: #e07a5f;
+    }
+    footer img.qr-code {
+      width: 100px;
+      margin-top: 1rem;
+    }
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+      }
+      nav ul {
+        flex-direction: column;
+        text-align: center;
+      }
+      nav ul li {
+        margin: 0.5rem 0;
+      }
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="#mains">Mains</a></li>
+      <li><a href="#bowls">Bowls</a></li>
+      <li><a href="#drinks">Drinks</a></li>
+    </ul>
+  </nav>
+  <section class="hero">
+    <h1>Wanderlust Bites Breakfast</h1>
+    <p>Organic, Hippie-Inspired Morning Fuel for Your Journey</p>
+  </section>
+  <section id="mains">
+    <h2>Road Trip Mains</h2>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <h3>Sunrise Avocado Toast</h3>
+        <div class="price">$7</div>
+        <p>Organic whole-grain sourdough topped with smashed organic avocado, microgreens, & a sprinkle of hemp seeds. Add seasonal persimmons (+$1). <em>Glows like a desert dawn!</em></p>
+        <div class="options">Gluten-free bread available.</div>
+      </div>
+      <div class="menu-item">
+        <h3>Nomad’s Breakfast Taco</h3>
+        <div class="price">$8</div>
+        <p>Two organic corn tortillas with scrambled organic eggs, organic avocado salsa, & cilantro microgreens. Swap eggs for mashed banana for vegan vibes. <em>A sunrise fiesta on the road!</em></p>
+        <div class="options">Gluten-free & vegan option.</div>
+      </div>
+    </div>
+  </section>
+  <section id="bowls">
+    <h2>Wanderlust Bowls</h2>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <h3>Morning Gypsy Smoothie Bowl</h3>
+        <div class="price">$9</div>
+        <p>Organic banana, mango, & seasonal berries blended with organic coconut water, topped with organic chia seeds, grapes, & coconut yogurt. <em>Colorful like a festival sunrise!</em></p>
+        <div class="options">Add organic almond butter (+$1).</div>
+      </div>
+      <div class="menu-item">
+        <h3>Tropical Trail Bowl</h3>
+        <div class="price">$9</div>
+        <p>Organic pineapple, mango, & seasonal persimmons blended with organic almond milk, topped with organic granola, apples, & hemp seeds. <em>Bright like a jungle morning!</em></p>
+        <div class="options">Add organic coconut flakes (+$0.50).</div>
+      </div>
+    </div>
+  </section>
+  <section id="drinks">
+    <h2>Sip the Journey</h2>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <h3>Nomad’s Coffee</h3>
+        <div class="price">$3–$5</div>
+        <p>Organic fair-trade coffee, served hot ($3), iced ($3), affogato ($5: espresso over organic coconut yogurt), or latte ($4: with organic oat milk). <em>Bold like a mountain wake-up!</em></p>
+        <div class="options">Add organic oat milk (+$0.50).</div>
+      </div>
+      <div class="menu-item">
+        <h3>Roadside Horchata</h3>
+        <div class="price">$4</div>
+        <p>Organic rice, cinnamon, & vanilla blended creamy smooth with a sprinkle of nutmeg. <em>Smooth like a morning breeze!</em></p>
+        <div class="options">High-margin: costs ~$0.30.</div>
+      </div>
+      <div class="menu-item">
+        <h3>Pure Coconut Wanderer</h3>
+        <div class="price">$3</div>
+        <p>Organic coconut water, straight from the tropics. <em>Hydrating like a rainforest dawn!</em></p>
+        <div class="options">High-margin: costs ~$0.50.</div>
+      </div>
+      <div class="menu-item">
+        <h3>Mango Coconut Dream</h3>
+        <div class="price">$3</div>
+        <p>Organic coconut water infused with organic mango puree. <em>Exotic like a morning escape!</em></p>
+        <div class="options">High-margin: costs ~$0.60.</div>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <p>Follow <a href="https://instagram.com/WanderlustBites" target="_blank">@WanderlustBites</a> for pop-up locations & organic breakfasts that vibe with your soul! 🌿🚐</p>
+    <p>All ingredients locally sourced, USDA organic. Eco-friendly packaging keeps the planet groovy!</p>
+    <p>© 2025 Wanderlust Bites. Prices subject to change.</p>
+    <img class="qr-code" src="https://via.placeholder.com/100" alt="QR code to Wanderlust Bites Instagram">
+  </footer>
+  <script>
+    // Smooth scrolling for nav links
+    document.querySelectorAll('nav a').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
