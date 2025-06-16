@@ -1,0 +1,320 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Wanderlust Bites Food Trailer presentation showcasing organic, hippie-inspired menus and stats for festivals and investors.">
+  <meta name="keywords" content="organic food truck, hippie menu, travel-inspired eats, festival food, Wanderlust Bites">
+  <meta name="author" content="Wanderlust Bites">
+  <title>Wanderlust Bites | Organic Hippie Food Trailer Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f7f1e3;
+      font-family: 'Roboto', sans-serif;
+      color: #333;
+    }
+    .reveal .slides {
+      text-align: left;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'Amatic SC', cursive;
+      color: #2c6e49;
+    }
+    .reveal h1 {
+      font-size: 3.5em;
+      text-align: center;
+    }
+    .reveal h2 {
+      font-size: 2.5em;
+    }
+    .reveal p, .reveal li {
+      font-size: 1.2em;
+      color: #555;
+    }
+    .reveal .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .reveal .menu-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .reveal .menu-item h3 {
+      font-size: 1.8em;
+      color: #e07a5f;
+      margin-bottom: 0.5rem;
+    }
+    .reveal .menu-item .price {
+      font-weight: bold;
+      color: #2c6e49;
+    }
+    .reveal .menu-item p {
+      font-size: 1em;
+      color: #777;
+    }
+    .reveal .highlight {
+      color: #e07a5f;
+      font-weight: bold;
+    }
+    .reveal .qr-code {
+      width: 100px;
+      margin: 1rem auto;
+      display: block;
+    }
+    .reveal .footer {
+      font-size: 0.9em;
+      color: #777;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .reveal .slide-background {
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <!-- Slide 1: Title -->
+      <section data-background="https://images.unsplash.com/photo-1566710776577-1d6874d8c4e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80">
+        <h1>Wanderlust Bites</h1>
+        <p style="text-align: center; color: #f4e285; font-size: 1.8em;">Organic Hippie Food Trailer</p>
+        <p style="text-align: center; color: white;">Fuel Your Journey with Travel-Inspired Eats<br>Follow @WanderlustBites</p>
+        <div class="footer">© 2025 Wanderlust Bites</div>
+      </section>
+
+      <!-- Slide 2: Concept -->
+      <section data-background="https://images.unsplash.com/photo-1558961363-fa8e7415e95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80">
+        <h2>The Wanderlust Bites Vision</h2>
+        <ul>
+          <li>Organic, hippie-inspired food trailer for festival-goers & travelers</li>
+          <li>Travel-life theme with earthy flavors & eco-friendly packaging</li>
+          <li>Mission: Fuel adventures with sustainable, high-vibe eats</li>
+          <li>Links to travel lifestyle adventures</li>
+        </ul>
+      </section>
+
+      <!-- Slide 3: Market Opportunity -->
+      <section>
+        <h2>Why Food Trucks? Why Organic?</h2>
+        <ul>
+          <li><span class="highlight">$2 billion</span> food truck industry revenue</li>
+          <li><span class="highlight">78%</span> of customers find trucks via social media</li>
+          <li><span class="highlight">$71.6 billion</span> U.S. organic market, <span class="highlight">$22 billion</span> in produce</li>
+          <li><span class="highlight">76%</span> buy organic for health, <span class="highlight">55%</span> for sustainability</li>
+          <li>Target: Millennials, Gen Z, festival-goers</li>
+        </ul>
+        <img src="https://images.unsplash.com/photo-1533174072545-33a9b6d0357f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Festival crowd" style="width: 300px; margin-top: 1rem;">
+      </section>
+
+      <!-- Slide 4: Dinner Menu – Mains & Sweets -->
+      <section>
+        <h2>Dinner Menu: Mains & Sweets</h2>
+        <div class="menu-grid">
+          <div class="menu-item">
+            <h3>Bohemian Burger Bliss</h3>
+            <div class="price">$10</div>
+            <p>Organic beef/portobello, avocado spread. <em>Route 66 vibes!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Nomad’s Taco Trek</h3>
+            <div class="price">$9</div>
+            <p>Organic jackfruit/chicken, avocado salsa. <em>Fiesta soul!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Peace & Love Grilled Cheese</h3>
+            <div class="price">$7</div>
+            <p>Organic sourdough, mozzarella. <em>Campfire comfort!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Cosmic Cupcake Dream</h3>
+            <div class="price">$4</div>
+            <p>Organic vanilla/cacao, coconut frosting. <em>Moonrise sweet!</em></p>
+          </div>
+        </div>
+        <p class="highlight">High-margin: 300–600%</p>
+      </section>
+
+      <!-- Slide 5: Dinner Menu – Bowls & Drinks -->
+      <section>
+        <h2>Dinner Menu: Bowls & Sips</h2>
+        <div class="menu-grid">
+          <div class="menu-item">
+            <h3>Gypsy Fruit Groove</h3>
+            <div class="price">$8</div>
+            <p>Banana, mango, berries, chia. <em>Morning hike fresh!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Mango Road Smoothie</h3>
+            <div class="price">$5</div>
+            <p>Fruits, almond milk. <em>Coastal cruise!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Strawberry Sunset Lemonade</h3>
+            <div class="price">$3</div>
+            <p>Lemon, strawberry. <em>Festival afterglow!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Nomad’s Coffee</h3>
+            <div class="price">$3–$5</div>
+            <p>Hot, iced, affogato. <em>Mountain trail!</em></p>
+          </div>
+        </div>
+        <p class="highlight">High-margin: 400–1,125%</p>
+      </section>
+
+      <!-- Slide 6: Breakfast Menu – Mains & Bowls -->
+      <section>
+        <h2>Breakfast Menu: Morning Fuel</h2>
+        <div class="menu-grid">
+          <div class="menu-item">
+            <h3>Sunrise Avocado Toast</h3>
+            <div class="price">$7</div>
+            <p>Sourdough, avocado, microgreens. <em>Desert dawn!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Nomad’s Breakfast Taco</h3>
+            <div class="price">$8</div>
+            <p>Eggs/banana, avocado salsa. <em>Sunrise fiesta!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Morning Gypsy Smoothie Bowl</h3>
+            <div class="price">$9</div>
+            <p>Banana, berries, coconut yogurt. <em>Festival sunrise!</em></p>
+          </div>
+        </div>
+        <p class="highlight">High-margin: 400–600%</p>
+      </section>
+
+      <!-- Slide 7: Breakfast Menu – Drinks -->
+      <section>
+        <h2>Breakfast Menu: Sip the Sunrise</h2>
+        <div class="menu-grid">
+          <div class="menu-item">
+            <h3>Nomad’s Coffee</h3>
+            <div class="price">$3–$5</div>
+            <p>Hot, iced, affogato, latte. <em>Mountain wake-up!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Roadside Horchata</h3>
+            <div class="price">$4</div>
+            <p>Rice, cinnamon. <em>Morning breeze!</em></p>
+          </div>
+          <div class="menu-item">
+            <h3>Pure Coconut Wanderer</h3>
+            <div class="price">$3</div>
+            <p>Coconut water. <em>Rainforest dawn!</em></p>
+          </div>
+        </div>
+        <p class="highlight">High-margin: 400–1,200%</p>
+      </section>
+
+      <!-- Slide 8: Financial Snapshot -->
+      <section>
+        <h2>Profitable & Scalable</h2>
+        <ul>
+          <li><span class="highlight">$8,000–$10,000</span>/month revenue (50 customers/day, $8–$10/ticket)</li>
+          <li><span class="highlight">$6,000–$7,000</span>/month profit after $2,000 costs</li>
+          <li><span class="highlight">$75,600</span> startup (trailer, equipment)</li>
+          <li><span class="highlight">$600–$1,200</span>/month ingredients (500 servings)</li>
+          <li><span class="highlight">300–1,125%</span> markup</li>
+        </ul>
+        <img src="https://via.placeholder.com/300x150?text=Revenue+Chart" alt="Revenue chart" style="margin-top: 1rem;">
+      </section>
+
+      <!-- Slide 9: Operations & Sourcing -->
+      <section>
+        <h2>Sustainable Operations</h2>
+        <ul>
+          <li>Compact trailer with grill, blender, espresso machine</li>
+          <li>Prep: <5 min/item (tacos, smoothies, coffee)</li>
+          <li>Sourcing: UNFI, KeHE, local farms (fruits $0.50–$2/lb)</li>
+          <li>Eco-packaging for <span class="highlight">55%</span> sustainability buyers</li>
+        </ul>
+        <img src="https://images.unsplash.com/photo-1598032895397-b9472444bf93?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Farmers market" style="width: 300px;">
+      </section>
+
+      <!-- Slide 10: Marketing & Social Media -->
+      <section>
+        <h2>Reaching Our Tribe</h2>
+        <ul>
+          <li>@WanderlustBites on Instagram for pop-ups</li>
+          <li><span class="highlight">78%</span> customers via social media</li>
+          <li>Strategy: Vibrant posts, Reels, Stories</li>
+          <li>Promotion: QR codes ($5/100 flyers), festivals</li>
+        </ul>
+        <img class="qr-code" src="https://via.placeholder.com/100" alt="QR code to Instagram">
+      </section>
+
+      <!-- Slide 11: Call to Action -->
+      <section data-background="https://images.unsplash.com/photo-1503764654157-72d979d9af2f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80">
+        <h2>Join the Wanderlust Journey!</h2>
+        <ul>
+          <li>Visit WanderlustBites.com</li>
+          <li>Follow @WanderlustBites</li>
+          <li>Partner for festivals/catering</li>
+          <li>Contact: [info@wanderlustbites.com]</li>
+        </ul>
+        <div class="footer">Live the travel life with our organic eats!</div>
+      </section>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      transition: 'slide',
+      controls: true,
+      progress: true,
+      history: true,
+      center: true
+    });
+  </script>
+</body>
+</html>
